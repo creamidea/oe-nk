@@ -1,0 +1,30 @@
+{
+  "name": "oe-nk",
+  "description": "一个简单的博客预览发布系统",
+  "main": "index.js",
+  "authors": [
+    "junjia ni"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "koa",
+    "emacs",
+    "org-mode",
+    "jekyll",
+    "blog",
+    "node"
+  ],
+  "homepage": "https://github.com/creamidea/creamidea",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ace": "~1.2.2",
+    "requirejs": "~2.1.20"
+  }
+}
