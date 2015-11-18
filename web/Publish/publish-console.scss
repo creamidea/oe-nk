@@ -1,0 +1,57 @@
+$top-bar-height: 30px;
+@mixin top-bar-button ($bc) {
+  width: 15px;
+  height: 15px;
+  background: $bc; // #D82C2D
+  border-radius: 14px;
+  margin: 7px;
+  margin-right: 0;
+  display: inline-block;
+}
+#oe-nk-local {
+  .console-wrapper {
+    display: none;
+    background: black;
+    position: fixed;
+    height: 600px;
+    bottom: 20%;
+    left: 5%;
+    width: 800px;
+    box-shadow: 4px 4px 12px gray;
+    border-radius: 4px 4px 0 0;
+    .top-bar {
+      position: absolute;
+      width: 100%;
+      height: $top-bar-height;
+      background: linear-gradient(0deg, #9E9898, #E0DCDC);
+      border-radius: 4px 4px 0 0;
+    }
+    .close {
+      @include top-bar-button(rgb(231,66,67));
+    }
+    .minimun {
+      @include top-bar-button(rgb(245,178,39));
+    }
+    .maximun {
+      @include top-bar-button(rgb(85,199,49));
+    }
+    .title {
+      position: absolute;
+      top: 0;
+      left: 37%;
+      color: black;
+    }
+    .publish-console {
+      position: absolute;
+      margin-top: $top-bar-height;
+      z-index: 10;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      font-size: 16px;
+      font-family: Menlo;
+      font-weight: 400;
+    }
+  }
+}

@@ -26,9 +26,15 @@
   "homepage": "https://github.com/creamidea/creamidea#creamideagithubio",
   "dependencies": {
     "colors": "^1.1.2",
+    "css-loader": "^0.23.0",
+    "jsx-loader": "^0.13.2",
     "koa": "^1.1.2",
     "koa-router": "^5.2.3",
     "koa-static": "^1.5.2",
+    "node-sass": "^3.4.2",
+    "react": "^0.14.2",
+    "sass-loader": "^3.1.1",
+    "style-loader": "^0.13.0",
     "ws": "^0.4.32"
   }
 }

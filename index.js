@@ -21,7 +21,15 @@ app.use(function*(next) {
       body.on('data', function(chunk) {
         // console.log(chunk.toString());
         html = chunk.toString()
-        html = html.slice(0, -8) + '<link rel="stylesheet" type="text/css" href="publish.css"><script src="publish.js"></script></html>'
+        html = html.slice(0, -16) +
+          '<div id="oe-nk-local"></div>' +
+          // '<link rel="stylesheet" type="text/css" href="publish.css">'+
+          '<script src="/bower_components/react/react.min.js"></script>' +
+          '<script src="/bower_components/react/react-with-addons.min.js"></script>' +
+          '<script src="/bower_components/react/react-dom.min.js"></script>' +
+          '<script src="/bower_components/ace/build/src-min-noconflict/ace.js"></script>' +
+          '<script src="/bundle.js"></script>' +
+          '</body></html>'
       })
       yield body.on.bind(body, 'end') // TODO: 理解这里的意思 http://stackoverflow.com/a/23853606/1925954
       this.body = html
@@ -47,7 +55,7 @@ wss.on('connection', function connection(ws) {
         ws.send(JSON.stringify(message))
       }).on('exit', function() {
         ws.send(JSON.stringify({
-          stdout: `Process:${this.pid} published ${this.spawnargs[2]} over.`,
+          stdout: `Process:${this.pid} published ${this.spawnargs[2]} over. Exit.`,
           status: 0
         }))
       })
@@ -55,7 +63,7 @@ wss.on('connection', function connection(ws) {
         ws.send(JSON.stringify(message))
       }).on('exit', function() {
         ws.send(JSON.stringify({
-          stdout: `Process:${this.pid} published ${this.spawnargs[2]} over.`,
+          stdout: `Process:${this.pid} published ${this.spawnargs[2]} over. Exit.`,
           status: 0
         }))
       })

@@ -14,7 +14,9 @@ var colors = require('colors')
 class Deployer {
   // branch 分支的名称
   // dirname 站点（blog）的路径在哪里
-  constructor() {
+  // articlesDir 文章的路径
+  // publicDir 部署到Github的路径
+  constructor (articlesDir, publicDir) {
     if (!dirname) var dirname = __dirname
     this.root = dirname
   }
@@ -31,28 +33,39 @@ class Deployer {
     var dirname = sh.shift()
     sh.every(function(cwd) {
       process.chdir(dirname)
-      // console.log(`Now in ${dirname}`)
+        // console.log(`Now in ${dirname}`)
       if (typeof cwd === 'string' || cwd instanceof String) {
         cwd = cwd.split(' ')
       }
       // console.log(`$ ${cwd.join(' ')} [process:${process.pid}]`.green)
-      process.send({stdout: `$ ${cwd.join(' ')} [process:${process.pid}]`, status: 0})
+      // process.send({
+      //   command
+      //   stdout: `$ ${cwd.join(' ')} [process:${process.pid}]`,
+      //   status: 0
+      // })
+      var command = `${cwd.join(' ')} [process:${process.pid}]`
       var rlt = spawnSync(cwd.shift(), cwd)
       if (rlt.status === null) {
         console.log(`command cannot found: ${rlt.args[0]}`.red)
-        process.send({stdout:'command cannot found: ${rlt.args[0]}', status: 2})
+        process.send({
+          stdout: 'command cannot found: ${rlt.args[0]}',
+          status: 2
+        })
         process.exit(2)
       }
+      // console.log(rlt)
+      var stdout = rlt.stdout.toString()
+      var stderr = rlt.stderr.toString()
+      process.send({
+        path: dirname,
+        command: command,
+        stderr: stderr,
+        stdout: stdout,
+        status: rlt.status
+      })
       if (rlt.status === 0) {
-        var stdout = rlt.stdout.toString()
-        // console.log(stdout)
-        if (stdout) process.send({stdout: stdout, status: 0})
         return true
       } else {
-        if (rlt.stderr) {
-          console.log(rlt.stderr.toString().red, rlt.stdout.toString())
-          process.send({stderr: rlt.stderr.toString(), stdout: rlt.stdout.toString(), status: rlt.status})
-        }
         // else if (rlt.stdout) process.send({fd: 'stdout', hint: rlt.stdout.toString(), status: rlt.status})
         return false
       }
@@ -72,17 +85,17 @@ class Deployer {
 
     return [
       dirname,
-      // 'git status',
+      'git status',
       // `git checkout ${branch}`,
       // `git add _articles static deploy.js README.org _draft favicon.ico`, // TODO: here will be contain deploy.js
-      `git add ${files}`, // TODO: here will be contain deploy.js
-      ['git', 'commit', '-m', comment],
-      `git push origin ${branch}:${branch}`
+      // `git add ${files}`, // TODO: here will be contain deploy.js
+      // ['git', 'commit', '-m', comment],
+      // `git push origin ${branch}:${branch}`
     ]
   }
 }
 
 (function() {
-  var d = new Deployer
+  var d = new Deployer("/Users/creamidea/Documents/creamidea2")
   d.start()
 })()

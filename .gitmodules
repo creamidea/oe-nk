@@ -1,0 +1,3 @@
+[submodule "web/ace"]
+	path = web/ace
+	url = git@github.com:creamidea/ace.git
