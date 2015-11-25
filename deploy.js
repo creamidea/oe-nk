@@ -17,8 +17,13 @@ class Deployer {
   // articlesDir 文章的路径
   // publicDir 部署到Github的路径
   constructor (articlesDir, publicDir) {
-    if (!dirname) var dirname = __dirname
-    this.root = dirname
+    if (!articlesDir) {
+      console.log("Please tell me where your articles.");
+      process.exit(-1)
+    }
+    var dirname = __dirname
+    this.articlesDir = articlesDir
+    this.publicDir = publicDir || __dirname + '/public'
   }
 
   start() {
@@ -33,7 +38,7 @@ class Deployer {
     var dirname = sh.shift()
     sh.every(function(cwd) {
       process.chdir(dirname)
-        // console.log(`Now in ${dirname}`)
+      // console.log(`Now in ${dirname}`)
       if (typeof cwd === 'string' || cwd instanceof String) {
         cwd = cwd.split(' ')
       }
@@ -81,21 +86,21 @@ class Deployer {
     }
     if (!branch || branch === 'undefined') var branch = "master"
     if (!comment || comment === 'undefined') var comment = "Publish at " + (new Date())
-    if (branch === 'master') dirname = this.root + '/public'
+    if (branch === 'master') dirname = this.publicDir
+    if (branch === 'articles') dirname = this.articlesDir
 
     return [
       dirname,
       'git status',
       // `git checkout ${branch}`,
-      // `git add _articles static deploy.js README.org _draft favicon.ico`, // TODO: here will be contain deploy.js
-      // `git add ${files}`, // TODO: here will be contain deploy.js
-      // ['git', 'commit', '-m', comment],
-      // `git push origin ${branch}:${branch}`
+      `git add ${files}`, // TODO: here will be contain deploy.js
+      ['git', 'commit', '-m', comment],
+      `git push`
     ]
   }
 }
 
 (function() {
-  var d = new Deployer("/Users/creamidea/Documents/creamidea2")
+  var d = new Deployer("/Users/creamidea/Documents/creamidea")
   d.start()
 })()

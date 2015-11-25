@@ -10,31 +10,32 @@ var wss = new WebSocketServer({
 })
 
 app.use(function*(next) {
-    // console.log(this)
-    yield next
+  // console.log(this)
+  yield next
 
-    var body = this.body
-    var type = this.type
-    if (type === 'html' || type === 'text/html') {
-      // 截获koa-static处理的html文件，插入自己想要的东西，然后返回
-      var html = ""
-      body.on('data', function(chunk) {
-        // console.log(chunk.toString());
-        html = chunk.toString()
-        html = html.slice(0, -16) +
-          '<div id="oe-nk-local"></div>' +
-          // '<link rel="stylesheet" type="text/css" href="publish.css">'+
-          '<script src="/bower_components/react/react.min.js"></script>' +
-          '<script src="/bower_components/react/react-with-addons.min.js"></script>' +
-          '<script src="/bower_components/react/react-dom.min.js"></script>' +
-          '<script src="/bower_components/ace/build/src-min-noconflict/ace.js"></script>' +
-          '<script src="/bundle.js"></script>' +
-          '</body></html>'
-      })
-      yield body.on.bind(body, 'end') // TODO: 理解这里的意思 http://stackoverflow.com/a/23853606/1925954
-      this.body = html
-    }
-  })
+  var body = this.body
+  var type = this.type
+  if (type === 'html' || type === 'text/html') {
+    // 截获koa-static处理的html文件，插入自己想要的东西，然后返回
+    var html = ""
+    body.on('data', function(chunk) {
+      // console.log(chunk.toString());
+      html = chunk.toString()
+      html = html.slice(0, -16) +
+	'<div id="oe-nk-local"></div>' +
+	// '<link rel="stylesheet" type="text/css" href="publish.css">'+
+	'<script src="/bower_components/react/react.min.js"></script>' +
+	'<script src="/bower_components/react/react-with-addons.min.js"></script>' +
+	'<script src="/bower_components/react/react-dom.min.js"></script>' +
+	'<script src="/bower_components/ace/build/src-min-noconflict/ace.js"></script>' +
+	'<script src="/bundle.js"></script>' +
+	'</body></html>'
+    })
+    // yield body.on('end')
+    yield body.on.bind(body, 'end') // TODO: 理解这里的意思 http://stackoverflow.com/a/23853606/1925954
+    this.body = html
+  }
+})
   .use(require('koa-static')(__dirname + '/public'), {
     defer: true
   })
@@ -49,23 +50,23 @@ wss.on('connection', function connection(ws) {
 
     // TODO: 后面如果要做扩展的时候在搞
     if (message.command === 'publish') {
-      var child1 = child_process.fork(__dirname + '/deploy.js', ['articles', '_articles _draft static README.org favicon.ico index.js bin.js deploy.js', message.argv[0]])
+      var child1 = child_process.fork(__dirname + '/deploy.js', ['articles', '.', message.argv[0]])
       var child2 = child_process.fork(__dirname + '/deploy.js', ['master', '.', message.argv[0]])
       child1.on('message', function(message) {
-        ws.send(JSON.stringify(message))
+	ws.send(JSON.stringify(message))
       }).on('exit', function() {
-        ws.send(JSON.stringify({
-          stdout: `Process:${this.pid} published ${this.spawnargs[2]} over. Exit.`,
-          status: 0
-        }))
+	ws.send(JSON.stringify({
+	  stdout: `Process:${this.pid} published ${this.spawnargs[2]} over. Exit.`,
+	  status: 0
+	}))
       })
       child2.on('message', function(message) {
-        ws.send(JSON.stringify(message))
+	ws.send(JSON.stringify(message))
       }).on('exit', function() {
-        ws.send(JSON.stringify({
-          stdout: `Process:${this.pid} published ${this.spawnargs[2]} over. Exit.`,
-          status: 0
-        }))
+	ws.send(JSON.stringify({
+	  stdout: `Process:${this.pid} published ${this.spawnargs[2]} over. Exit.`,
+	  status: 0
+	}))
       })
     }
 
